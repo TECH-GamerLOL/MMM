@@ -18,10 +18,16 @@ class Menkey ():
         def moveLeft(self):
             self.position[0] -= self.speed
         
-        def move_right(self):
+        def moveRight(self):
             self.position[0] += self.speed
 
         def jump(self):
             self.position[1] += self.speed
 
-        
+        def takeDamage(damage):
+            if not self.invincible:
+                if damage < 0:
+                    print("Damage mus be positive")
+                    return
+                return
+                
