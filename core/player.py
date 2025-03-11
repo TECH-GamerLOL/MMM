@@ -3,7 +3,7 @@ import pygame
 
 class Menkey ():
     def __init__(self, start_x, start_y):
-        if not isinstance(start_x,(int, float)) or not isinstance(start_y(int, float)):
+        if not isinstance(start_x,(int, float)):
             print("Must be num")
             return
         if start_x < 0 or start_y < 0:
@@ -25,7 +25,7 @@ class Menkey ():
         def jump(self):
             self.position[1] += self.speed
             
-        def handle_input(self):
+        def handle_input(self):  
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 self.move_left()
