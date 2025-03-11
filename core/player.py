@@ -1,4 +1,5 @@
 import math
+import pygame
 
 class Menkey ():
     def __init__(self, start_x, start_y):
@@ -23,6 +24,15 @@ class Menkey ():
 
         def jump(self):
             self.position[1] += self.speed
+            
+        def handle_input(self):
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.move_left()
+            if keys[pygame.K_RIGHT]:
+                self.move_right()
+            if keys[pygame.K_SPACE]:
+                self.jump()
 
         def takeDamage(damage):
             if not self.invincible:
