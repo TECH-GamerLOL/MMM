@@ -1,5 +1,11 @@
 import math
 import pygame
+from core.physic import Physics
+
+import sys
+print(sys.path)  
+print("Physics module loaded:", 'core.physic' in sys.modules)
+
 
 class Menkey ():
     def __init__(self, start_x, start_y):
@@ -9,7 +15,12 @@ class Menkey ():
         if start_x < 0 or start_y < 0:
             print("Can't be negative")
             return
-        
+        self.position = [start_x, start_y]
+        self.velocity = 0
+        self.gravity = Physics()
+        self.isJumping = False
+        self.groundY = start_y
+
         self.position = [start_y, start_x]
         self.health = 3
         self.speed = 2
@@ -23,14 +34,17 @@ class Menkey ():
         self.position[0] += self.speed
 
     def jump(self):
-        self.position[1] += self.speed
-            
+        if not self.isJumping:  
+            self.velocity = -10  
+            self.isJumping = True
+
+
     def handle_input(self):  
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.move_left()
+            self.moveLeft()
         if keys[pygame.K_RIGHT]:
-            self.move_right()
+            self.moveRight()
         if keys[pygame.K_SPACE]:
             self.jump()
 
@@ -40,4 +54,17 @@ class Menkey ():
                 print("Damage mus be positive")
                 return
             return
-                
+    
+    def draw(self, screen):
+        self.color = [200, 200, 200]
+        self.size = 20
+        pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))
+        pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
+        pygame.draw.rect(screen, (100, 50, 0), (0, self.groundY + self.size, 800, 20))
+
+    def update(self):
+        self.gravity.apply_gravity(self)  
+        if self.position[1] >= self.groundY:
+            self.position[1] = self.groundY
+            self.velocity = 0
+            self.isJumping = False
