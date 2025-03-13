@@ -1,27 +1,23 @@
 import math
 import pygame
 from core.physic import Physics
+from core.entity import Entity
 
 import sys
 print(sys.path)  
 print("Physics module loaded:", 'core.physic' in sys.modules)
 
 
-class Menkey ():
+class Menkey (Entity):
     def __init__(self, start_x, start_y):
-        if not isinstance(start_x, (int, float)) or not isinstance(start_y, (int, float)):
-            print("Must be num")
-            return
-        if start_x < 0 or start_y < 0:
-            print("Can't be negative")
-            return
+        super().__init__(start_x, start_y, 40, (0, 0, 255))
+        self.rect = pygame.Rect(start_x, start_y, 40, 40)
+        self.color = (0, 0, 255)
+        self.gravity = Physics()  # Initialize gravity as an instance of the Physics class
         self.position = [start_x, start_y]
         self.velocity = 0
-        self.gravity = Physics()
         self.isJumping = False
         self.groundY = start_y
-
-        self.position = [start_y, start_x]
         self.health = 3
         self.speed = 2
         self.power = []
@@ -58,13 +54,21 @@ class Menkey ():
     def draw(self, screen):
         self.color = [200, 200, 200]
         self.size = 20
-        pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))
         pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
-        pygame.draw.rect(screen, (100, 50, 0), (0, self.groundY + self.size, 800, 20))
 
     def update(self):
-        self.gravity.apply_gravity(self)  
-        if self.position[1] >= self.groundY:
-            self.position[1] = self.groundY
-            self.velocity = 0
-            self.isJumping = False
+        self.gravity.apply_gravity(self)  # Apply gravity to player
+
+        if self.rect.y >= self.groundY:  # Check if player has reached the ground
+            self.rect.y = self.groundY  # Make sure player stays on the ground
+            self.velocity = 0  # Reset velocity when on the ground
+            self.gravity = 2.0  # Temporarily increase gravity to test
+            self.groundY = 400  # Example ground level
+            self.isJumping = False  # No longer jumping when on the ground
+    
+        self.handle_input()  # Handle player input (e.g., left, right, jump)
+
+        print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
+
+
+
