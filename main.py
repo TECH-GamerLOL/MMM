@@ -15,7 +15,7 @@ pygame.display.set_caption("Menkey Game")
 
 WHITE = (255, 255, 255)
 
-player = Menkey(400, 300)
+player = Menkey(400, 150)
 enemy = Enemy(400,150)  
 
 running = True
@@ -28,9 +28,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    player.handle_input()
     player.update()
-    print(f"Velocity:, Position:")
     player.draw(screen)
     enemy.update()
     enemy.move()  

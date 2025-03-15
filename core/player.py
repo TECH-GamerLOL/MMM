@@ -2,7 +2,7 @@ import math
 import pygame
 from core.physic import Physics
 from core.entity import Entity
-from config import HEIGHT
+from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
 
 import sys
 print(sys.path)  
@@ -18,11 +18,12 @@ class Menkey (Entity):
         self.position = [start_x, start_y]
         self.velocity = 0
         self.isJumping = False
-        self.groundY = HEIGHT - self.rect.height
-        self.health = 3
-        self.speed = 2
+        self.groundY = HEIGHT - PLAYER_SIZE
+        self.health = PLAYER_HEALTH
+        self.speed = PLAYER_SPEED
         self.power = []
         self.invincible = False
+        self.ground_tolerence = PLAYER_GROUND_TOLERANCE
     
     def moveLeft(self):
         self.position[0] -= self.speed
@@ -32,7 +33,7 @@ class Menkey (Entity):
 
     def jump(self):
         if not self.isJumping:  
-            self.velocity = -10  
+            self.velocity = -PLAYER_JUMP
             self.isJumping = True
 
 
@@ -50,24 +51,24 @@ class Menkey (Entity):
             if damage < 0:
                 print("Damage mus be positive")
                 return
-            return
+            self.health -= damage
     
     def draw(self, screen):
         self.color = [200, 200, 200]
-        self.size = 20
+        self.size = PLAYER_SIZE
         pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
 
     def update(self):
+        self.handle_input()
+
         self.gravity.apply_gravity(self)  
         self.position[1] += self.velocity
         self.rect.y = self.position[1]
 
-        if self.rect.y >= self.groundY:  # Check if player has reached the ground
+        if self.rect.y >= self.groundY - self.ground_tolerence:  # Check if player has reached the ground
             self.rect.y = self.groundY  # Make sure player stays on the ground
             self.velocity = 0  # Reset velocity when on the ground
             self.isJumping = False  # No longer jumping when on the ground
-    
-        self.handle_input()
 
         print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
 
