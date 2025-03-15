@@ -2,6 +2,7 @@ import math
 import pygame
 from core.physic import Physics
 from core.entity import Entity
+from config import HEIGHT
 
 import sys
 print(sys.path)  
@@ -10,14 +11,14 @@ print("Physics module loaded:", 'core.physic' in sys.modules)
 
 class Menkey (Entity):
     def __init__(self, start_x, start_y):
-        super().__init__(start_x, start_y, 40, (0, 0, 255))
+        super().__init__(start_x, start_y, 40, (0, 0, 0))
         self.rect = pygame.Rect(start_x, start_y, 40, 40)
         self.color = (0, 0, 255)
         self.gravity = Physics()  # Initialize gravity as an instance of the Physics class
         self.position = [start_x, start_y]
         self.velocity = 0
         self.isJumping = False
-        self.groundY = start_y
+        self.groundY = HEIGHT - self.rect.height
         self.health = 3
         self.speed = 2
         self.power = []
@@ -57,16 +58,16 @@ class Menkey (Entity):
         pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
 
     def update(self):
-        self.gravity.apply_gravity(self)  # Apply gravity to player
+        self.gravity.apply_gravity(self)  
+        self.position[1] += self.velocity
+        self.rect.y = self.position[1]
 
         if self.rect.y >= self.groundY:  # Check if player has reached the ground
             self.rect.y = self.groundY  # Make sure player stays on the ground
             self.velocity = 0  # Reset velocity when on the ground
-            self.gravity = 2.0  # Temporarily increase gravity to test
-            self.groundY = 400  # Example ground level
             self.isJumping = False  # No longer jumping when on the ground
     
-        self.handle_input()  # Handle player input (e.g., left, right, jump)
+        self.handle_input()
 
         print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
 

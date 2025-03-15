@@ -4,6 +4,12 @@ class Physics:
         self.terminal_velocity = terminal_velocity
 
     def apply_gravity(self, entity):
+        if entity.isJumping:
+            entity.velocity += self.gravity
+            entity.velocity = min(entity.velocity, self.terminal_velocity)
+        else:
+            entity.velocity = 0
+    
         if entity.rect.y < entity.groundY:  # Apply gravity if the player is not on the ground
             entity.velocity += self.gravity  # Increase velocity due to gravity
             entity.velocity = min(entity.velocity, self.terminal_velocity)  # Cap velocity at terminal velocity

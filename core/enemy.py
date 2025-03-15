@@ -1,7 +1,7 @@
 import pygame
 from core.entity import Entity  
 from core.physic import Physics
-from config import ENEMY_SIZE, ENEMY_SPEED, CHASE_RANGE, WIDTH, HEIGHT
+from config import ENEMY_SIZE, ENEMY_SPEED, WIDTH, HEIGHT
 
 class Enemy(Entity):
     def __init__(self, start_x, start_y):
@@ -12,6 +12,7 @@ class Enemy(Entity):
         self.velocity = 0
         self.direction = 1  # 1 means moving right, -1 means moving left
         self.movement_speed = ENEMY_SPEED
+        self.isJumping = False
         print(f"Enemy created at ({start_x}, {start_y})")
 
     def move(self):

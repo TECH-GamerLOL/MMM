@@ -1,7 +1,7 @@
 import pygame
 from core.player import Menkey
 from core.enemy import Enemy
-from config import ENEMY_SIZE, ENEMY_SPEED, CHASE_RANGE, WIDTH, HEIGHT
+from config import WIDTH, HEIGHT
 
 import sys
 import os
@@ -15,7 +15,7 @@ pygame.display.set_caption("Menkey Game")
 
 WHITE = (255, 255, 255)
 
-player = Menkey(100, 300)
+player = Menkey(400, 300)
 enemy = Enemy(400,150)  
 
 running = True
