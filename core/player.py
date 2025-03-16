@@ -12,7 +12,7 @@ print("Physics module loaded:", 'core.physic' in sys.modules)
 class Menkey (Entity):
     def __init__(self, start_x, start_y):
         super().__init__(start_x, start_y, 40, (0, 0, 0))
-        self.rect = pygame.Rect(start_x, start_y, 40, 40)
+        self.rect = pygame.Rect(start_x, start_y, PLAYER_SIZE, PLAYER_SIZE)
         self.color = (0, 0, 255)
         self.gravity = Physics()  # Initialize gravity as an instance of the Physics class
         self.position = [start_x, start_y]
@@ -35,6 +35,7 @@ class Menkey (Entity):
         if not self.isJumping:  
             self.velocity = -PLAYER_JUMP
             self.isJumping = True
+            print(f"Jump triggered! Velocity: {self.velocity}")
 
 
     def handle_input(self):  
@@ -44,6 +45,7 @@ class Menkey (Entity):
         if keys[pygame.K_RIGHT]:
             self.moveRight()
         if keys[pygame.K_SPACE]:
+            print("Jumping")
             self.jump()
 
     def takeDamage(damage, self):
@@ -61,9 +63,16 @@ class Menkey (Entity):
     def update(self):
         self.handle_input()
 
+        print(f"Before gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
+
         self.gravity.apply_gravity(self)  
         self.position[1] += self.velocity
         self.rect.y = self.position[1]
+
+        if self.isJumping:
+            self.velocity += self.gravity.gravity
+        
+        print(f"After gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
 
         if self.rect.y >= self.groundY - self.ground_tolerence:  # Check if player has reached the ground
             self.rect.y = self.groundY  # Make sure player stays on the ground
