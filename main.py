@@ -30,9 +30,15 @@ while running:
 
     player.update()
     player.draw(screen)
+    player.draw_health(screen)
+
     enemy.update()
     enemy.move()  
     enemy.draw(screen)
+
+    if player.rect.colliderect(enemy.rect):
+        player.takeDamage(10)
+        print("Player collided with enemy")
 
     pygame.display.update()
     clock.tick(60)

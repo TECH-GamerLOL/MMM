@@ -48,17 +48,25 @@ class Menkey (Entity):
             print("Jumping")
             self.jump()
 
-    def takeDamage(damage, self):
+    def takeDamage(self, damage):
         if not self.invincible:
             if damage < 0:
-                print("Damage mus be positive")
+                print("Damage must be positive")
                 return
             self.health -= damage
+            self.invincible = True
+            self.invincible_time = pygame.time.get_ticks()
+            print(f"Player took {damage} damage. Health: {self.health}")
     
     def draw(self, screen):
         self.color = [200, 200, 200]
         self.size = PLAYER_SIZE
         pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
+
+    def draw_health(self, screen):
+        for i in range(self.health):
+            print(f"Drawing health: {i}")
+            pygame.draw.rect(screen, (255, 0, 0), (10 + i * 10, 10, 10, 10))
 
     def update(self):
         self.handle_input()
