@@ -1,23 +1,14 @@
+import pygame
+
 class GameObject:
     def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self.rect = pygame.Rect(x, y, width, height)
 
     def get_rect(self):
-        return (self.x, self.y, self.width, self.height)
+        return self.rect
 
 def check_collision(obj1, obj2):
-    rect1 = obj1.get_rect()
-    rect2 = obj2.get_rect()
-
-    if (rect1[0] < rect2[0] + rect2[2] and
-        rect1[0] + rect1[2] > rect2[0] and
-        rect1[1] < rect2[1] + rect2[3] and
-        rect1[1] + rect1[3] > rect2[1]):
-        return True
-    return False
+    return obj1.get_rect().colliderect(obj2.get_rect())
 
 class Game:
     def __init__(self):

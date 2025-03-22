@@ -26,3 +26,6 @@ class Enemy(Entity):
             self.isJumping = False
         self.move()  # Move the enemy based on the AI logic (e.g., direction, speed)
 
+    def get_rect(self):
+        return self.rect
+

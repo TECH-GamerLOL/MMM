@@ -1,6 +1,7 @@
 import pygame
 from core.physic import Physics
 from core.entity import Entity
+from core.collision import check_collision
 from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
 
 import sys
@@ -13,7 +14,7 @@ class Menkey (Entity):
         return self.rect
     
     def __init__(self, start_x, start_y):
-        super().__init__(start_x, start_y, 40, (0, 0, 0))
+        super().__init__(start_x, start_y, 40, (10, 0, 0))
         self.rect = pygame.Rect(start_x, start_y, PLAYER_SIZE, PLAYER_SIZE)
         self.color = (0, 0, 255)
         self.gravity = Physics()  # Initialize gravity as an instance of the Physics class
@@ -57,9 +58,13 @@ class Menkey (Entity):
                 print("Damage must be positive")
                 return
             self.health -= damage
+            self.health = max(0, self.health)
             self.invincible = True
             self.invincible_time = pygame.time.get_ticks()
             print(f"Player took {damage} damage. Health: {self.health}")
+
+        if self.health <= 0:
+            print("Player is dead")
     
     def draw(self, screen):
         self.color = [200, 200, 200]
@@ -67,9 +72,14 @@ class Menkey (Entity):
         pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
 
     def draw_health(self, screen):
+        print(f"Drawing health: {self.health}")  
+        if self.health <= 0:
+            print("No health left!")
+        return  
+
         for i in range(self.health):
-            print(f"Drawing health: {i}")
-            pygame.draw.rect(screen, (255, 0, 0), (10 + i * 10, 10, 10, 10))
+            pygame.draw.rect(screen, (255, 0, 0), (20 + i * 15, 20, 12, 12))  
+
 
     def update(self):
         self.handle_input()
