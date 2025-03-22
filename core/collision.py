@@ -32,12 +32,3 @@ class Game:
             if self.lives <= 0:
                 self.game_over = True
                 print("Game Over")
-
-# Example usage
-game = Game()
-while not game.game_over:
-    game.update()
-    # Update player and enemy positions here
-    # For example:
-    # game.player.x += 1
-    # game.enemy.x -= 1

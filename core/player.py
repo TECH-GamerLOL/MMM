@@ -1,4 +1,3 @@
-import math
 import pygame
 from core.physic import Physics
 from core.entity import Entity
@@ -10,6 +9,9 @@ print("Physics module loaded:", 'core.physic' in sys.modules)
 
 
 class Menkey (Entity):
+    def get_rect(self):
+        return self.rect
+    
     def __init__(self, start_x, start_y):
         super().__init__(start_x, start_y, 40, (0, 0, 0))
         self.rect = pygame.Rect(start_x, start_y, PLAYER_SIZE, PLAYER_SIZE)
@@ -23,6 +25,7 @@ class Menkey (Entity):
         self.speed = PLAYER_SPEED
         self.power = []
         self.invincible = False
+        self.invincible_time = 0
         self.ground_tolerence = PLAYER_GROUND_TOLERANCE
     
     def moveLeft(self):
@@ -86,6 +89,11 @@ class Menkey (Entity):
             self.rect.y = self.groundY  # Make sure player stays on the ground
             self.velocity = 0  # Reset velocity when on the ground
             self.isJumping = False  # No longer jumping when on the ground
+        
+        if self.invincible:
+            if pygame.time.get_ticks() - self.invincible_time > 2000:
+                self.invincible = False
+                print("Player is not invincible")
 
         print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
 

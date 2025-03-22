@@ -1,13 +1,14 @@
 import pygame
 from core.player import Menkey
 from core.enemy import Enemy
+from core.collision import check_collision
 from config import WIDTH, HEIGHT
 
 import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-
+print("Initialising game")
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -22,6 +23,7 @@ running = True
 clock = pygame.time.Clock()
 
 while running:
+    print("Game loop running")
     screen.fill(WHITE)
 
     for event in pygame.event.get():
@@ -36,7 +38,7 @@ while running:
     enemy.move()  
     enemy.draw(screen)
 
-    if player.rect.colliderect(enemy.rect):
+    if check_collision(player, enemy):
         player.takeDamage(10)
         print("Player collided with enemy")
 
