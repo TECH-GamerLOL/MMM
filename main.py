@@ -2,6 +2,7 @@ import pygame
 from core.player import Menkey
 from core.enemy import Enemy
 from core.collision import check_collision
+from core.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
 
 import sys
@@ -18,6 +19,12 @@ WHITE = (255, 255, 255)
 
 player = Menkey(400, 150)
 enemy = Enemy(400,150)  
+obstacles = [
+    Ground(0, HEIGHT -50, WIDTH, 50),
+    Platform(100, 500, 200, 20),
+    MovingPlatform(300, 400, 200, 20, 2),
+    Spikes(600, 500, 50, 50)
+]
 
 running = True
 clock = pygame.time.Clock()
@@ -37,6 +44,11 @@ while running:
     enemy.update()
     enemy.move()  
     enemy.draw(screen)
+
+    for obstacle in obstacles:
+        if isinstance(obstacle, MovingPlatform):
+            obstacle.update()
+        obstacle.draw(screen)
 
     if check_collision(player, enemy):
         player.takeDamage(10)

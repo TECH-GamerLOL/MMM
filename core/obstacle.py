@@ -41,34 +41,11 @@ class Spikes(Obstacle):
             (self.rect.left, self.rect.bottom),
             (self.rect.centerx, self.rect.top),
             (self.rect.right, self.rect.bottom)
-        ])  # Draw red spikes
+        ])  
 
-# Example usage in main.py
-if __name__ == "__main__":
-    pygame.init()
-    screen = pygame.display.set_mode((800, 600))
-    clock = pygame.time.Clock()
+class Ground(Platform):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
 
-    obstacles = [
-        Platform(100, 500, 200, 20),
-        MovingPlatform(300, 400, 200, 20, 2),
-        Spikes(600, 500, 50, 50)
-    ]
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        screen.fill((0, 0, 0))  # Clear screen with black
-
-        for obstacle in obstacles:
-            if isinstance(obstacle, MovingPlatform):
-                obstacle.update()
-            obstacle.draw(screen)
-
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
+    def draw(self, screen):
+        pygame.draw.rect(screen, (139, 69, 19), self.rect)  
