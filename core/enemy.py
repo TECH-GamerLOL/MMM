@@ -28,6 +28,7 @@ class Enemy(Entity, GameObject):
             self.isJumping = False
         self.move()  # Move the enemy based on the AI logic (e.g., direction, speed)
 
+        #Handle collisions with obstacles
         for obstacle in obstacles:
             if self.rect.colliderect(obstacle.rect):
                 if self.velocity > 0:

@@ -1,7 +1,6 @@
 import pygame
 from core.physic import Physics
-from core.entity import Entity
-from core.collision import check_collision
+from core.entity import Entity # Inherit from the Entity class
 from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
 
 import sys
