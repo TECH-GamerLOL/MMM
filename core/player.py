@@ -75,8 +75,8 @@ class Menkey (Entity):
         print(f"Drawing health: {self.health}")  
         if self.health <= 0:
             print("No health left!")
-        return  
-
+            return  
+        
         for i in range(self.health):
             pygame.draw.rect(screen, (255, 0, 0), (20 + i * 15, 20, 12, 12))  
 
