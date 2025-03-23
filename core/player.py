@@ -85,40 +85,42 @@ class Menkey (Entity):
         self.handle_input()
 
         print(f"Before gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
+        self.velocity += self.gravity.gravity
+        self.velocity = min(self.velocity, self.gravity.terminal_velocity)
 
-        self.gravity.apply_gravity(self)  
         self.position[1] += self.velocity
         self.rect.y = self.position[1]
 
-        if self.isJumping:
-            self.velocity += self.gravity.gravity
-        
         print(f"After gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
 
-        print(f"Ground Y: {self.groundY}, Player Bottom: {self.rect.bottom}, Tolerance: {self.ground_tolerence}")
-        
-        if self.rect.bottom >= self.groundY - self.ground_tolerence:  # Check if player has reached the ground
-            self.rect.bottom = self.groundY  # Make sure player stays on the ground
-            self.velocity = 0  # Reset velocity when on the ground
-            self.isJumping = False  # No longer jumping when on the ground
+        on_ground = False 
 
-        if self.invincible:
-            if pygame.time.get_ticks() - self.invincible_time > 2000:
-                self.invincible = False
-                print("Player is not invincible")
-        
+
         for obstacle in obstacles:
             if self.rect.colliderect(obstacle.rect):
-                if self.velocity > 0: 
-                    self.rect.bottom = obstacle.rect.top
+                if self.velocity > 0:  # Falling down
+                    self.rect.bottom = obstacle.rect.top  
+                    self.position[1] = self.rect.y  
                     self.velocity = 0
-                    self.isJumping = False
-                elif self.velocity < 0:
-                    self.rect.top = obstacle.rect.bottom
+                    on_ground = True
+                elif self.velocity < 0:  # Hitting the ceiling
+                    self.rect.top = obstacle.rect.bottom  
+                    self.position[1] = self.rect.y
                     self.velocity = 0
-               
 
-        print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
+        if self.rect.bottom >= self.groundY:
+            self.rect.bottom = self.groundY
+            self.position[1] = self.rect.y
+            self.velocity = 0
+            on_ground = True
+
+        if on_ground:
+            self.isJumping = False
+
+        self.rect.x = self.position[0]
+
+        print(f"Final Position: {self.rect.y}, Velocity: {self.velocity}")
+
 
 
 
