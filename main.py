@@ -20,7 +20,7 @@ WHITE = (255, 255, 255)
 player = Menkey(400, 150)
 enemy = Enemy(400,150)  
 obstacles = [
-    Ground(0, HEIGHT -50, WIDTH, 50),
+    Ground(0, HEIGHT - 50, WIDTH, 50),
     Platform(100, 500, 200, 20),
     MovingPlatform(300, 400, 200, 20, 2),
     Spikes(600, 500, 50, 50)
@@ -37,11 +37,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    player.update()
+    player.update(obstacles)
     player.draw(screen)
     player.draw_health(screen)
 
-    enemy.update()
+    enemy.update(obstacles)
     enemy.move()  
     enemy.draw(screen)
 

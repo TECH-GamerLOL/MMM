@@ -81,7 +81,7 @@ class Menkey (Entity):
             pygame.draw.rect(screen, (255, 0, 0), (20 + i * 15, 20, 12, 12))  
 
 
-    def update(self):
+    def update(self, obstacles):
         self.handle_input()
 
         print(f"Before gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
@@ -95,15 +95,28 @@ class Menkey (Entity):
         
         print(f"After gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
 
-        if self.rect.y >= self.groundY - self.ground_tolerence:  # Check if player has reached the ground
-            self.rect.y = self.groundY  # Make sure player stays on the ground
+        print(f"Ground Y: {self.groundY}, Player Bottom: {self.rect.bottom}, Tolerance: {self.ground_tolerence}")
+        
+        if self.rect.bottom >= self.groundY - self.ground_tolerence:  # Check if player has reached the ground
+            self.rect.bottom = self.groundY  # Make sure player stays on the ground
             self.velocity = 0  # Reset velocity when on the ground
             self.isJumping = False  # No longer jumping when on the ground
-        
+
         if self.invincible:
             if pygame.time.get_ticks() - self.invincible_time > 2000:
                 self.invincible = False
                 print("Player is not invincible")
+        
+        for obstacle in obstacles:
+            if self.rect.colliderect(obstacle.rect):
+                if self.velocity > 0: 
+                    self.rect.bottom = obstacle.rect.top
+                    self.velocity = 0
+                    self.isJumping = False
+                elif self.velocity < 0:
+                    self.rect.top = obstacle.rect.bottom
+                    self.velocity = 0
+               
 
         print(f"Player position: {self.rect.y}, Velocity: {self.velocity}")
 

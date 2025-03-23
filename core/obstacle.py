@@ -1,15 +1,16 @@
 import pygame
+from config import HEIGHT, WIDTH
 
 # Base class for obstacles
-class Obstacle:
+class Obstacles:
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
 
-    def draw(self, screen):
+    def draw(self):
         raise NotImplementedError("This method should be overridden by subclasses")
 
 # Subclass for static platforms
-class Platform(Obstacle):
+class Platform(Obstacles):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height)
 
@@ -17,7 +18,7 @@ class Platform(Obstacle):
         pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Draw a green platform
 
 # Subclass for moving platforms
-class MovingPlatform(Obstacle):
+class MovingPlatform(Obstacles):
     def __init__(self, x, y, width, height, speed):
         super().__init__(x, y, width, height)
         self.speed = speed
@@ -32,7 +33,7 @@ class MovingPlatform(Obstacle):
         pygame.draw.rect(screen, (0, 0, 255), self.rect)  # Draw a blue moving platform
 
 # Subclass for spikes
-class Spikes(Obstacle):
+class Spikes(Obstacles):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height)
 
