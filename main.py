@@ -1,8 +1,9 @@
 import pygame
-from core.player import Menkey  # Encapsulation: Menkey class encapsulates player attributes and behaviors
-from core.enemy import Enemy  # Encapsulation: Enemy class encapsulates enemy attributes and behaviors
-from core.collision import check_collision
-from core.obstacle import Platform, MovingPlatform, Spikes, Ground  # Inheritance: Platform, MovingPlatform, Spikes, and Ground inherit from Obstacle
+from scripts.clouds import Clouds  # Encapsulation: Clouds class encapsulates cloud attributes and behaviors
+from scripts.player import Menkey  # Encapsulation: Menkey class encapsulates player attributes and behaviors
+from scripts.enemy import Enemy  # Encapsulation: Enemy class encapsulates enemy attributes and behaviors
+from scripts.collision import check_collision
+from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground  # Inheritance: Platform, MovingPlatform, Spikes, and Ground inherit from Obstacle
 from config import WIDTH, HEIGHT
 
 import sys

@@ -1,6 +1,6 @@
 import pygame
-from core.physic import Physics
-from core.entity import Entity # Inherit from the Entity class
+from scripts.physic import Physics
+from scripts.entity import Entity # Inherit from the Entity class
 from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
 
 import sys
@@ -64,6 +64,8 @@ class Menkey (Entity):
 
         if self.health <= 0:
             print("Player is dead")
+
+            
     
     def draw(self, screen):
         self.color = [200, 200, 200]
@@ -119,6 +121,7 @@ class Menkey (Entity):
         self.rect.x = self.position[0]
 
         print(f"Final Position: {self.rect.y}, Velocity: {self.velocity}")
+    
 
 
 

@@ -1,7 +1,7 @@
 import pygame
-from core.entity import Entity  
-from core.physic import Physics
-from core.collision import GameObject
+from scripts.entity import Entity  
+from scripts.physic import Physics
+from scripts.collision import GameObject
 from config import ENEMY_SIZE, ENEMY_SPEED, WIDTH, HEIGHT
 
 class Enemy(Entity, GameObject):
