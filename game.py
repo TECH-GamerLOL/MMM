@@ -1,10 +1,12 @@
 import pygame
-from scripts.clouds import Clouds  # Encapsulation: Clouds class encapsulates cloud attributes and behaviors
-from scripts.player import Menkey  # Encapsulation: Menkey class encapsulates player attributes and behaviors
-from scripts.enemy import Enemy  # Encapsulation: Enemy class encapsulates enemy attributes and behaviors
+from scripts.clouds import Clouds
+from scripts.player import Menkey
+from scripts.enemy import Enemy
 from scripts.collision import check_collision
-from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground  # Inheritance: Platform, MovingPlatform, Spikes, and Ground inherit from Obstacle
+from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
+from scripts.dashboard import Dashboard
+from scripts.level import Level
 
 class Game:
     def __init__(self):
@@ -18,24 +20,28 @@ class Game:
         self.BLUE = (0, 255, 255)
 
         self.clouds = Clouds()
+        self.dashboard = Dashboard()
+        self.level = Level()
+        self.sound = None  # Set to None initially or load your sound files
 
-        self.player = Menkey(400, 150)  # Encapsulation: Creating an instance of Menkey class
-        self.enemy = Enemy(400, 150)  # Encapsulation: Creating an instance of Enemy class
+        # Initialize the player and enemy
+        self.player = Menkey(400, 150, self.dashboard, self.level, self.sound, self.screen)
+        self.enemy = Enemy(400, 150)
 
-        # Create instances of obstacles, including the ground
+        # Create obstacles (Ground, Platform, Spikes, etc.)
         self.obstacles = [
-            Ground(0, HEIGHT - 50, WIDTH, 50),  # Inheritance: Ground class inherits from Platform
-            Platform(100, 500, 200, 20),  # Inheritance: Platform class inherits from Obstacle
-            MovingPlatform(300, 400, 200, 20, 2),  # Inheritance: MovingPlatform class inherits from Obstacle
-            Spikes(600, 500, 50, 50)  # Inheritance: Spikes class inherits from Obstacle
+            Ground(0, HEIGHT - 50, WIDTH, 50),
+            Platform(100, 500, 200, 20),
+            MovingPlatform(300, 400, 200, 20, 2),  # Moving platform with speed of 2
+            Spikes(600, 500, 50, 50)
         ]
 
-    def run(self):
+    def run(self): 
         while self.running:
             self.handle_events()
             self.update()
             self.render()
-            self.clock.tick(60)
+            self.clock.tick(60)  # Run the game at 60 FPS
         pygame.quit()
 
     def handle_events(self):
@@ -44,41 +50,44 @@ class Game:
                 self.running = False
 
     def update(self):
-        self.clouds.update()  # Encapsulation: Updating clouds
+        self.clouds.update()  # Update cloud movement
 
-        self.player.update(self.obstacles)  # Encapsulation: Updating player state
-        self.enemy.update(self.obstacles)  # Encapsulation: Updating enemy state
-        self.enemy.move()  # Encapsulation: Moving enemy
+        self.player.update(self.obstacles)  # Update player state
+        self.enemy.update(self.obstacles, self.player)  # Pass player to the enemy's update method
+        self.enemy.move()  # Move the enemy
 
-        # Update moving platforms
+    # Update moving platforms
         for obstacle in self.obstacles:
-            if isinstance(obstacle, MovingPlatform):  # Polymorphism: Checking if obstacle is an instance of MovingPlatform
-                obstacle.update()  # Polymorphism: Calling update method on MovingPlatform instance
+            if isinstance(obstacle, MovingPlatform):  # Update moving platforms specifically
+                obstacle.update()
 
-        # Check for collision between player and enemy
+    # Check for collisions between player and enemy
         if check_collision(self.player, self.enemy):
-            self.player.takeDamage(10)  # Encapsulation: Reducing player's health
+            self.player.takeDamage(10)  # Reduce player's health on collision
             print("Player collided with enemy")
 
-        # Check for collision between player and spikes
+    # Check for collisions between player and spikes
         for obstacle in self.obstacles:
-            if isinstance(obstacle, Spikes):  # Polymorphism: Checking if obstacle is an instance of Spikes
+            if isinstance(obstacle, Spikes):
                 if self.player.rect.colliderect(obstacle.rect):
-                    self.player.takeDamage(10)  # Encapsulation: Reducing player's health
+                    self.player.takeDamage(10)
                     print("Player collided with spikes")
 
     def render(self):
-        self.screen.fill(self.BLUE)
+        self.screen.fill(self.BLUE)  # Fill screen with blue background
 
-        self.clouds.render(self.screen)  # Encapsulation: Rendering clouds
+        self.clouds.render(self.screen)  # Render the clouds
+        self.player.draw(self.screen)  # Draw the player
 
-        self.player.draw(self.screen)  # Encapsulation: Drawing player
-        self.player.draw_health(self.screen)  # Encapsulation: Drawing player's health
+    # Call the Dashboard's draw method to display the health and other stats
+        self.dashboard.draw(self.screen)
 
-        self.enemy.draw(self.screen)  # Encapsulation: Drawing enemy
+        self.enemy.draw(self.screen)  # Draw the enemy
 
-        # Draw obstacles
+    # Draw obstacles
         for obstacle in self.obstacles:
-            obstacle.draw(self.screen)  # Polymorphism: Calling draw method on obstacle instance
+            obstacle.draw(self.screen)
 
-        pygame.display.update()
+    # Draw the dashboard (health, score, etc.)
+        pygame.display.update()  # Update the screen display
+

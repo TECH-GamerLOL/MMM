@@ -1,33 +1,33 @@
 import pygame
 from scripts.physic import Physics
-from scripts.entity import Entity # Inherit from the Entity class
+from scripts.entity import Entity  # Inherit from the Entity class
 from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
 
-import sys
-print(sys.path)  
-print("Physics module loaded:", 'core.physic' in sys.modules)
-
-
-class Menkey (Entity):
-    def get_rect(self):
-        return self.rect
-    
-    def __init__(self, start_x, start_y):
-        super().__init__(start_x, start_y, 40, (10, 0, 0))
-        self.rect = pygame.Rect(start_x, start_y, PLAYER_SIZE, PLAYER_SIZE)
-        self.color = (0, 0, 255)
-        self.gravity = Physics()  # Initialize gravity as an instance of the Physics class
-        self.position = [start_x, start_y]
-        self.velocity = 0
-        self.isJumping = False
-        self.groundY = HEIGHT - PLAYER_SIZE
+class Menkey(Entity):
+    def __init__(self, x, y, dashboard, level, sound, screen):
+        super().__init__(x, y, PLAYER_SIZE, (0, 255, 0))  # Call parent class constructor for common properties
+        self.dashboard = dashboard
+        self.level = level
+        self.sound = sound
+        self.screen = screen
         self.health = PLAYER_HEALTH
-        self.speed = PLAYER_SPEED
-        self.power = []
         self.invincible = False
         self.invincible_time = 0
-        self.ground_tolerence = PLAYER_GROUND_TOLERANCE
-    
+        self.isJumping = False
+        self.speed = PLAYER_SPEED
+        self.position = [x, y]
+        self.velocity = 0
+
+    def handle_input(self):  
+        """Handle input for movement"""
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.moveLeft()
+        if keys[pygame.K_RIGHT]:
+            self.moveRight()
+        if keys[pygame.K_SPACE]:
+            self.jump()
+
     def moveLeft(self):
         self.position[0] -= self.speed
         
@@ -40,63 +40,26 @@ class Menkey (Entity):
             self.isJumping = True
             print(f"Jump triggered! Velocity: {self.velocity}")
 
-
-    def handle_input(self):  
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.moveLeft()
-        if keys[pygame.K_RIGHT]:
-            self.moveRight()
-        if keys[pygame.K_SPACE]:
-            print("Jumping")
-            self.jump()
-
     def takeDamage(self, damage):
         if not self.invincible:
-            if damage < 0:
-                print("Damage must be positive")
-                return
             self.health -= damage
-            self.health = max(0, self.health)
+            self.health = max(0, self.health)  # Ensure health doesn't go below 0
             self.invincible = True
-            self.invincible_time = pygame.time.get_ticks()
+            self.invincible_time = pygame.time.get_ticks()  # Record the time the player took damage
             print(f"Player took {damage} damage. Health: {self.health}")
-
+        
         if self.health <= 0:
             print("Player is dead")
-
-            
-    
-    def draw(self, screen):
-        self.color = [200, 200, 200]
-        self.size = PLAYER_SIZE
-        pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.size, self.size))  # Draw player
-
-    def draw_health(self, screen):
-        print(f"Drawing health: {self.health}")  
-        if self.health <= 0:
-            print("No health left!")
-            return  
         
-        for i in range(self.health):
-            pygame.draw.rect(screen, (255, 0, 0), (20 + i * 15, 20, 12, 12))  
-
+        # Update the dashboard with the new health value
+        self.dashboard.update_health(self.health)
 
     def update(self, obstacles):
+        """Update player status and handle collisions"""
         self.handle_input()
-
-        print(f"Before gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
-        self.velocity += self.gravity.gravity
-        self.velocity = min(self.velocity, self.gravity.terminal_velocity)
-
-        self.position[1] += self.velocity
-        self.rect.y = self.position[1]
-
-        print(f"After gravity: Position: {self.rect.y}, Velocity: {self.velocity}")
+        self.apply_gravity()  # Apply gravity from the Entity class
 
         on_ground = False 
-
-
         for obstacle in obstacles:
             if self.rect.colliderect(obstacle.rect):
                 if self.velocity > 0:  # Falling down
@@ -109,8 +72,8 @@ class Menkey (Entity):
                     self.position[1] = self.rect.y
                     self.velocity = 0
 
-        if self.rect.bottom >= self.groundY:
-            self.rect.bottom = self.groundY
+        if self.rect.bottom >= HEIGHT:
+            self.rect.bottom = HEIGHT
             self.position[1] = self.rect.y
             self.velocity = 0
             on_ground = True
@@ -120,9 +83,9 @@ class Menkey (Entity):
 
         self.rect.x = self.position[0]
 
-        print(f"Final Position: {self.rect.y}, Velocity: {self.velocity}")
-    
+    def draw(self, screen):
+        """Draw the player on the screen"""
+        super().draw(screen)  # Call parent class draw method
 
-
-
-
+        # Draw player health or other UI elements here if needed
+        self.dashboard.draw(screen)
