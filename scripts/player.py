@@ -1,18 +1,13 @@
 import pygame
-from scripts.physic import Physics
 from scripts.entity import Entity  # Inherit from the Entity class
-from config import HEIGHT, PLAYER_SIZE, PLAYER_HEALTH, PLAYER_SPEED, PLAYER_GROUND_TOLERANCE, PLAYER_JUMP
+from config import HEIGHT, PLAYER_SIZE, PLAYER_SPEED, PLAYER_JUMP
 
 class Menkey(Entity):
-    def __init__(self, x, y, dashboard, level, sound, screen):
+    def __init__(self, x, y, level, sound, screen):
         super().__init__(x, y, PLAYER_SIZE, (0, 255, 0))  # Call parent class constructor for common properties
-        self.dashboard = dashboard
         self.level = level
         self.sound = sound
         self.screen = screen
-        self.health = PLAYER_HEALTH
-        self.invincible = False
-        self.invincible_time = 0
         self.isJumping = False
         self.speed = PLAYER_SPEED
         self.position = [x, y]
@@ -40,19 +35,12 @@ class Menkey(Entity):
             self.isJumping = True
             print(f"Jump triggered! Velocity: {self.velocity}")
 
-    def takeDamage(self, damage):
-        if not self.invincible:
-            self.health -= damage
-            self.health = max(0, self.health)  # Ensure health doesn't go below 0
-            self.invincible = True
-            self.invincible_time = pygame.time.get_ticks()  # Record the time the player took damage
-            print(f"Player took {damage} damage. Health: {self.health}")
-        
-        if self.health <= 0:
-            print("Player is dead")
-        
-        # Update the dashboard with the new health value
-        self.dashboard.update_health(self.health)
+    def respawn(self):
+        self.position = [100, HEIGHT - PLAYER_SIZE]  # or your desired start position
+        self.velocity = 0
+        self.isJumping = False
+        self.rect.topleft = self.position
+        print("Player respawned.")
 
     def update(self, obstacles):
         """Update player status and handle collisions"""
@@ -73,10 +61,9 @@ class Menkey(Entity):
                     self.velocity = 0
 
         if self.rect.bottom >= HEIGHT:
-            self.rect.bottom = HEIGHT
-            self.position[1] = self.rect.y
-            self.velocity = 0
-            on_ground = True
+            self.respawn()
+            return
+
 
         if on_ground:
             self.isJumping = False
@@ -86,6 +73,3 @@ class Menkey(Entity):
     def draw(self, screen):
         """Draw the player on the screen"""
         super().draw(screen)  # Call parent class draw method
-
-        # Draw player health or other UI elements here if needed
-        self.dashboard.draw(screen)

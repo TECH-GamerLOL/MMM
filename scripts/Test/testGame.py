@@ -1,16 +1,10 @@
-import sys
-import os
 import pygame
 
-# Add the 'scripts' directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
-
-# Now you can import from the 'scripts' folder
-from clouds import Clouds
-from player import Menkey
-from enemy import Enemy
-from collision import check_collision
-from obstacle import Platform, MovingPlatform, Spikes, Ground
+from scripts.clouds import Clouds
+from scripts.player import Menkey
+from scripts.enemy import Enemy
+from scripts.collision import check_collision
+from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
 
 

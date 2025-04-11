@@ -5,7 +5,6 @@ from scripts.enemy import Enemy
 from scripts.collision import check_collision
 from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
-from scripts.dashboard import Dashboard
 from scripts.level import Level
 
 class Game:
@@ -18,14 +17,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.BLUE = (0, 255, 255)
-
         self.clouds = Clouds()
-        self.dashboard = Dashboard()
         self.level = Level()
         self.sound = None  # Set to None initially or load your sound files
 
         # Initialize the player and enemy
-        self.player = Menkey(400, 150, self.dashboard, self.level, self.sound, self.screen)
+        self.player = Menkey(400, 150, self.level, self.sound, self.screen)
         self.enemy = Enemy(400, 150)
 
         # Create obstacles (Ground, Platform, Spikes, etc.)
@@ -63,15 +60,15 @@ class Game:
 
     # Check for collisions between player and enemy
         if check_collision(self.player, self.enemy):
-            self.player.takeDamage(10)  # Reduce player's health on collision
-            print("Player collided with enemy")
+            self.player.respawn()
+            print("Player collided with enemy - respawning")
 
-    # Check for collisions between player and spikes
+# Check for collisions between player and spikes
         for obstacle in self.obstacles:
             if isinstance(obstacle, Spikes):
                 if self.player.rect.colliderect(obstacle.rect):
-                    self.player.takeDamage(10)
-                    print("Player collided with spikes")
+                    self.player.respawn()
+                    print("Player collided with spikes - respawning")
 
     def render(self):
         self.screen.fill(self.BLUE)  # Fill screen with blue background
@@ -80,7 +77,7 @@ class Game:
         self.player.draw(self.screen)  # Draw the player
 
     # Call the Dashboard's draw method to display the health and other stats
-        self.dashboard.draw(self.screen)
+        #self.dashboard.draw(self.screen)
 
         self.enemy.draw(self.screen)  # Draw the enemy
 
