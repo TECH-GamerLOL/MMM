@@ -9,20 +9,23 @@ class Enemy(Entity):
         self.rect = pygame.Rect(start_x, start_y, ENEMY_SIZE, ENEMY_SIZE)
         self.gravity = Physics()  # Assuming you have a Physics class for gravity
         self.movement_speed = ENEMY_SPEED
-        self.direction = 1  # 1 means moving right, -1 means moving left
         self.chase_range = CHASE_RANGE  # Range at which the enemy starts chasing the player
-        self.target = None  # Placeholder for player or other target to chase
-        self.state = "walk"  # Initial state is walk (you can update this based on behavior)
-        self.velocity = 0  # Initialize velocity for gravity handling
+        self.velocity = 0  # Initial vertical velocity
+        self.alive = True
+        self.chaseing = False
     
     def update(self, obstacles, player):  # Accept player as an argument
+        if not self.alive:
+            return
         """Update the enemy, potentially based on player's position"""
         self.apply_gravity()  # Apply gravity from the Entity class
-        self.move()  # Update movement
 
-        # Check if the player is within the chase range
-        if abs(self.rect.centerx - player.rect.centerx) <= self.chase_range:
-            self.chase(player)  # Start chasing if player is within range
+        if not self.chaseing and abs(self.rect.centerx - player.rect.centerx) <= self.chase_range:
+            self.chaseing = True
+
+        # Only chase if started
+        if self.chaseing:
+            self.chase(player)
 
         # Handle collision with obstacles
         for obstacle in obstacles:
@@ -38,14 +41,9 @@ class Enemy(Entity):
         elif player.rect.centerx > self.rect.centerx:  # Player is on the right
             self.rect.x += self.movement_speed
 
-    def move(self):
-        """Enemy movement behavior"""
-        if self.state == "walk":
-            self.rect.x += self.direction * self.movement_speed
-            if self.rect.x <= 0 or self.rect.x >= WIDTH - ENEMY_SIZE:
-                self.direction *= -1  # Reverse direction when hitting screen edges
-        elif self.state == "bounce":
-            self.rect.x += self.direction * (self.movement_speed * 2)
+    def die(self):
+        """Handle enemy death"""
+        self.alive = False
 
     def draw(self, screen):
         """Draw the enemy on the screen"""

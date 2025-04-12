@@ -51,7 +51,6 @@ class Game:
 
         self.player.update(self.obstacles)  # Update player state
         self.enemy.update(self.obstacles, self.player)  # Pass player to the enemy's update method
-        self.enemy.move()  # Move the enemy
 
     # Update moving platforms
         for obstacle in self.obstacles:
