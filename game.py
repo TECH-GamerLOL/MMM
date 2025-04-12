@@ -92,9 +92,7 @@ class Game:
 
 # Draw obstacles on the world surface
         for obstacle in self.obstacles:
-            pygame.draw.rect(self.world, (100, 100, 100), obstacle.rect)  # Obstacles
-
-
+            obstacle.draw(self.world)  # Call the draw method for each obstacle
 # Blit the world surface to the screen with camera offset
         self.screen.blit(self.world, (-self.camera.offset.x, -self.camera.offset.y))
 

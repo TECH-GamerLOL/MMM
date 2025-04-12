@@ -20,8 +20,11 @@ class Enemy(Entity):
         """Update the enemy, potentially based on player's position"""
         self.apply_gravity()  # Apply gravity from the Entity class
 
-        if not self.chaseing and abs(self.rect.centerx - player.rect.centerx) <= self.chase_range:
+        distance = abs(self.rect.centerx - player.rect.centerx)
+        if distance <= self.chase_range:
             self.chaseing = True
+        else:
+            self.chaseing = False
 
         # Only chase if started
         if self.chaseing:
