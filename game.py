@@ -6,16 +6,20 @@ from scripts.collision import check_collision
 from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
 from scripts.level import Level
+from scripts.cam import Camera
 
 class Game:
     def __init__(self):
         pygame.init()
-
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Menkey Game")
-
+        self.world = pygame.Surface((WIDTH * 2, HEIGHT * 2))  # Create a surface that's twice as big as the screen
+        self.camera = Camera(WIDTH, HEIGHT)
         self.clock = pygame.time.Clock()
         self.running = True
+        self.game_finished = False
+        self.world = pygame.Surface((WIDTH * 3, HEIGHT * 2))  # 3x wide world!
+        self.camera = Camera(self.world.get_width(), self.world.get_height())
         self.BLUE = (0, 255, 255)
         self.clouds = Clouds()
         self.level = Level()
@@ -27,7 +31,7 @@ class Game:
 
         # Create obstacles (Ground, Platform, Spikes, etc.)
         self.obstacles = [
-            Ground(0, HEIGHT - 50, WIDTH, 50),
+            Ground(0, HEIGHT - 50, 3000, 50),
             Platform(100, 500, 200, 20),
             MovingPlatform(300, 400, 200, 20, 2),  # Moving platform with speed of 2
             Spikes(600, 500, 50, 50)
@@ -48,7 +52,6 @@ class Game:
 
     def update(self):
         self.clouds.update()  # Update cloud movement
-
         self.player.update(self.obstacles)  # Update player state
         self.enemy.update(self.obstacles, self.player)  # Pass player to the enemy's update method
 
@@ -68,22 +71,33 @@ class Game:
                 if self.player.rect.colliderect(obstacle.rect):
                     self.player.respawn()
                     print("Player collided with spikes - respawning")
+    def update_camera(self):
+        if self.player.rect.centerx > WIDTH // 2 and self.player.rect.centerx < self.level.width - WIDTH // 2:
+            self.camera_x = self.player.rect.centerx - WIDTH // 2
+        elif self.player.rect.centerx <= WIDTH // 2:
+            self.camera_x = 0
+        else:
+            self.camera_x = self.level.width - WIDTH
+
+        self.camera.offset.x = self.camera_x
 
     def render(self):
-        self.screen.fill(self.BLUE)  # Fill screen with blue background
+        self.clouds.render(self.screen)
+        self.world.fill(self.BLUE)  # Fill world with background color first
 
-        self.clouds.render(self.screen)  # Render the clouds
-        self.player.draw(self.screen)  # Draw the player
+        self.camera.update(self.player.rect)  # Update camera position based on the player
+# Draw enemy and player after obstacles
+        pygame.draw.rect(self.world, (255, 0, 0), self.enemy.rect)     # Enemy
+        pygame.draw.rect(self.world, (255, 200, 69), self.player.rect)  # Player
 
-    # Call the Dashboard's draw method to display the health and other stats
-        #self.dashboard.draw(self.screen)
-
-        self.enemy.draw(self.screen)  # Draw the enemy
-
-    # Draw obstacles
+# Draw obstacles on the world surface
         for obstacle in self.obstacles:
-            obstacle.draw(self.screen)
+            pygame.draw.rect(self.world, (100, 100, 100), obstacle.rect)  # Obstacles
 
-    # Draw the dashboard (health, score, etc.)
-        pygame.display.update()  # Update the screen display
+
+# Blit the world surface to the screen with camera offset
+        self.screen.blit(self.world, (-self.camera.offset.x, -self.camera.offset.y))
+
+        pygame.display.update()
+
 
