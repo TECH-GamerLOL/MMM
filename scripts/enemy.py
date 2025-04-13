@@ -1,11 +1,11 @@
-import pygame
 from scripts.entity import Entity  
 from scripts.physic import Physics
-from config import ENEMY_SIZE, ENEMY_SPEED, CHASE_RANGE
+from config import ENEMY_SIZE, ENEMY_SPEED, CHASE_RANGE, BOSS_SIZE
 
 class Enemy(Entity):
-    def __init__(self, start_x, start_y, color=(255, 0, 0)):  # <-- Add color here
-        super().__init__(start_x, start_y, ENEMY_SIZE, color)  # <-- Pass to Entity
+    def __init__(self, start_x, start_y, color=(255, 0, 0), size = None):
+        size = size or ENEMY_SIZE  
+        super().__init__(start_x, start_y, size, color)  # <-- Pass to Entity
         self.gravity = Physics()
         self.movement_speed = ENEMY_SPEED
         self.chase_range = CHASE_RANGE
@@ -54,6 +54,7 @@ class Enemy(Entity):
 
     def get_rect(self):
         return self.rect
+    
 class Snake(Enemy):
     def __init__(self, start_x, start_y):
         super().__init__(start_x, start_y, color = (255, 255, 0))
@@ -62,7 +63,7 @@ class Snake(Enemy):
 
 class GorillaBoss(Enemy):
     def __init__(self, start_x, start_y):
-        super().__init__(start_x, start_y, color = (150, 75, 100))
+        super().__init__(start_x, start_y, color = (150, 75, 100), size = BOSS_SIZE)
         self.movement_speed = 1   # Slow but powerful
         self.chase_range = 500    # Big boss awareness
         self.health = 100

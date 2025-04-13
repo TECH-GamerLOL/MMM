@@ -15,7 +15,13 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Menkey Game")
-        self.world = pygame.Surface((WIDTH * 3, HEIGHT * 2))  # 3x wide world!
+
+        # === Level Loading ===
+        self.level = Level1()
+        self.obstacles = self.level.obstacles
+        self.finish = self.level.finish
+
+        self.world = pygame.Surface((self.level.width, HEIGHT * 2))  # 3x wide world!
         self.camera = Camera(self.world.get_width(), self.world.get_height())
         self.clock = pygame.time.Clock()
         self.running = True
@@ -23,10 +29,6 @@ class Game:
         self.clouds = Clouds()
         self.sound = None  # Set sound before using it!
 
-        # === Level Loading ===
-        self.level = Level1()
-        self.obstacles = self.level.obstacles
-        self.finish = self.level.finish
 
         # === Player & Enemy ===
         self.player = Menkey(
@@ -96,9 +98,8 @@ class Game:
         self.camera.offset.x = self.camera_x
 
     def render(self):
-        self.clouds.render(self.screen)
         self.world.fill(self.BLUE)  # Fill world with background color first
-
+        self.clouds.render(self.world)
         self.camera.update(self.player.rect)  # Update camera position based on the player
         
         for obstacle in self.obstacles:
