@@ -3,8 +3,8 @@ from config import HEIGHT  # Assuming you have a config file with these constant
 from scripts.physic import Physics  # Assuming you have a Physics class for gravity
 
 class Entity:
-    def __init__(self, x, y, size, color):
-        self.rect = pygame.Rect(x, y, size, size)  # Defines the position and size
+    def __init__(self, start_x, start_y, size, color):
+        self.rect = pygame.Rect(start_x, start_y, size, size)  # Defines the position and size
         self.color = color  # Color of the entity
         self.velocity = 0
         self.isJumping = False

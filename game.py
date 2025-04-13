@@ -5,37 +5,39 @@ from scripts.enemy import Enemy
 from scripts.collision import check_collision
 from scripts.obstacle import Platform, MovingPlatform, Spikes, Ground
 from config import WIDTH, HEIGHT
-from scripts.level import Level
 from scripts.cam import Camera
+from scripts.levels.level1 import Level1
+from scripts.levels.finish import Finish
+from scripts.enemy import Eagle, GorillaBoss
 
 class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Menkey Game")
-        self.world = pygame.Surface((WIDTH * 2, HEIGHT * 2))  # Create a surface that's twice as big as the screen
-        self.camera = Camera(WIDTH, HEIGHT)
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.game_finished = False
         self.world = pygame.Surface((WIDTH * 3, HEIGHT * 2))  # 3x wide world!
         self.camera = Camera(self.world.get_width(), self.world.get_height())
+        self.clock = pygame.time.Clock()
+        self.running = True
         self.BLUE = (0, 255, 255)
         self.clouds = Clouds()
-        self.level = Level()
-        self.sound = None  # Set to None initially or load your sound files
+        self.sound = None  # Set sound before using it!
 
-        # Initialize the player and enemy
-        self.player = Menkey(400, 150, self.level, self.sound, self.screen)
+        # === Level Loading ===
+        self.level = Level1()
+        self.obstacles = self.level.obstacles
+        self.finish = self.level.finish
+
+        # === Player & Enemy ===
+        self.player = Menkey(
+            self.level.player_start_x,
+            self.level.player_start_y,
+            self.level,
+            self.sound,
+            self.screen
+        )
         self.enemy = Enemy(400, 150)
 
-        # Create obstacles (Ground, Platform, Spikes, etc.)
-        self.obstacles = [
-            Ground(0, HEIGHT - 50, 3000, 50),
-            Platform(100, 500, 200, 20),
-            MovingPlatform(300, 400, 200, 20, 2),  # Moving platform with speed of 2
-            Spikes(600, 500, 50, 50)
-        ]
 
     def run(self): 
         while self.running:
@@ -55,15 +57,21 @@ class Game:
         self.player.update(self.obstacles)  # Update player state
         self.enemy.update(self.obstacles, self.player)  # Pass player to the enemy's update method
 
+        for enemy in self.level.enemies:
+            if isinstance(enemy, Eagle):
+                enemy.update(self.player)
+            else:
+                enemy.update(self.obstacles, self.player)
+
     # Update moving platforms
         for obstacle in self.obstacles:
             if isinstance(obstacle, MovingPlatform):  # Update moving platforms specifically
                 obstacle.update()
-
-    # Check for collisions between player and enemy
-        if check_collision(self.player, self.enemy):
-            self.player.respawn()
-            print("Player collided with enemy - respawning")
+        
+        for enemy in self.level.enemies:
+            if check_collision(self.player, enemy):
+                self.player.respawn()
+                print("Player collided with enemy - respawning")
 
 # Check for collisions between player and spikes
         for obstacle in self.obstacles:
@@ -71,6 +79,12 @@ class Game:
                 if self.player.rect.colliderect(obstacle.rect):
                     self.player.respawn()
                     print("Player collided with spikes - respawning")
+
+        if self.finish.check_reached(self.player.rect):
+            self.game_finished = True
+            print("Level Complete! You reached the finish!")
+            self.running = False
+
     def update_camera(self):
         if self.player.rect.centerx > WIDTH // 2 and self.player.rect.centerx < self.level.width - WIDTH // 2:
             self.camera_x = self.player.rect.centerx - WIDTH // 2
@@ -86,14 +100,19 @@ class Game:
         self.world.fill(self.BLUE)  # Fill world with background color first
 
         self.camera.update(self.player.rect)  # Update camera position based on the player
-# Draw enemy and player after obstacles
-        pygame.draw.rect(self.world, (255, 0, 0), self.enemy.rect)     # Enemy
-        pygame.draw.rect(self.world, (255, 200, 69), self.player.rect)  # Player
-
-# Draw obstacles on the world surface
+        
         for obstacle in self.obstacles:
-            obstacle.draw(self.world)  # Call the draw method for each obstacle
+            obstacle.draw(self.world) 
+
+        for enemy in self.level.enemies:
+            enemy.draw(self.world)
+
+        self.player.draw(self.world)  # Draw player on the world surface
+        self.finish.draw(self.world)
+          
+
 # Blit the world surface to the screen with camera offset
+        self.finish.draw(self.world)
         self.screen.blit(self.world, (-self.camera.offset.x, -self.camera.offset.y))
 
         pygame.display.update()
