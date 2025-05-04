@@ -3,7 +3,7 @@ from config import HEIGHT
 from scripts.clouds import Clouds
 from scripts.obstacle import Ground, Platform, MovingPlatform, Spikes
 from scripts.levels.finish import Finish
-from scripts.enemy import Snake, Eagle, GorillaBoss
+from scripts.enemy import Snake, Eagle
 
 class Level1:
     def __init__(self):
@@ -35,7 +35,7 @@ class Level1:
         self.enemies.append(Snake(500, HEIGHT - 100))
         self.enemies.append(Snake(1500, HEIGHT - 100))
         self.enemies.append(Eagle(1800, 200))
-        self.enemies.append(GorillaBoss(3600, HEIGHT - 150))
+        self.enemies.append(Snake(3600, HEIGHT - 150))
 
 
     def update(self, player):
